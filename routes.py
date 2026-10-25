@@ -422,14 +422,35 @@ class SkamForm(StatesGroup):
     waiting_for_photo = State()
     waiting_for_virti = State()
 
-BASE_DIR = Path(__file__).resolve().parent
-PHOTOS_DIR = BASE_DIR / "photos"
-DATA_DIR = BASE_DIR / "data"
 
+import shutil
+
+BASE_DIR = Path(__file__).resolve().parent
+STORAGE_DIR = Path("/app/storage")
+
+PHOTOS_DIR = STORAGE_DIR / "photos"
+DATA_DIR = STORAGE_DIR / "data"
+DB_PATH = DATA_DIR / "skam.sqlite3"
+
+# Создаём папки на постоянном хранилище
 PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-DB_PATH = DATA_DIR / "skam.sqlite3"
+# Переносим старую базу, если она ещё доступна
+OLD_DB_PATH = BASE_DIR / "data" / "skam.sqlite3"
+
+if not DB_PATH.exists() and OLD_DB_PATH.exists():
+    shutil.copy2(OLD_DB_PATH, DB_PATH)
+    print("Старая база перенесена:", DB_PATH)
+
+# Переносим существующие фотографии, если они доступны
+OLD_PHOTOS_DIR = BASE_DIR / "photos"
+
+if OLD_PHOTOS_DIR.exists():
+    for photo in OLD_PHOTOS_DIR.iterdir():
+        if photo.is_file() and not (PHOTOS_DIR / photo.name).exists():
+            shutil.copy2(photo, PHOTOS_DIR / photo.name)
+
 
 
 async def setup_database():
