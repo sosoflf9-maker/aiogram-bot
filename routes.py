@@ -657,9 +657,17 @@ async def receive_photo(message: Message, state: FSMContext, bot):
         file = await bot.get_file(photo.file_id)
 
         await bot.download_file(
-            file.file_path,
-            destination=photo_path
-            )
+                        file.file_path,
+                        destination=photo_path
+        )
+        print("Путь сохранения:", photo_path.resolve())
+        print("Файл существует:", photo_path.exists())
+            
+        if photo_path.exists():
+            print("Размер файла:", photo_path.stat().st_size)
+                        
+            
+            
 
     except Exception:
         await message.answer(
