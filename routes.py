@@ -403,6 +403,7 @@
 
 from aiogram import Router, F
 from aiogram.filters import Command
+import os
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from pathlib import Path
@@ -426,7 +427,7 @@ class SkamForm(StatesGroup):
 import shutil
 
 BASE_DIR = Path(__file__).resolve().parent
-STORAGE_DIR = Path("/app/storage")
+STORAGE_DIR = Path(os.getenv("STORAGE_DIR", str(BASE_DIR / "storage")))
 
 PHOTOS_DIR = STORAGE_DIR / "photos"
 DATA_DIR = STORAGE_DIR / "data"
